@@ -1,0 +1,47 @@
+================================================================================
+RELATÓRIO DE LIMPEZA - BASE PMFS AMAZÔNIA LEGAL
+================================================================================
+Data/Hora: 2025-09-29 10:18:22
+
+RESUMO GERAL
+----------------------------------------
+Base original: 8656 linhas x 43 colunas
+Base final: 3983 linhas x 42 colunas
+Linhas removidas: 4673 (54.0%)
+Colunas removidas: 1 (2.3%)
+
+ETAPAS DE LIMPEZA
+----------------------------------------
+1. Remoção de colunas com >70% nulos
+   - colunas_removidas: 1
+   - colunas_restantes: 42
+   - detalhes: ['NRO_AUTORIZACAO_ORIGINAL']
+
+2. Tratamento CPF/CNPJ
+   - cpfs_convertidos_null: 0
+   - cnpjs_mantidos: 1584
+
+3. Remoção de linhas com muitos nulos
+   - linhas_removidas: 4673
+   - linhas_restantes: 3983
+   - threshold_nulos: 21.0
+
+4. Preenchimento de valores nulos
+   - nulos_antes: 1718
+   - nulos_depois: 0
+   - nulos_preenchidos: 1718
+
+ANÁLISE DA BASE FINAL
+----------------------------------------
+Total de linhas: 3983
+Total de colunas: 42
+Colunas com nulos: 0
+Colunas sem nulos: 42
+Total de nulos na base final: 0
+
+TOP 10 COLUNAS COM MAIS NULOS (BASE FINAL)
+----------------------------------------
+
+================================================================================
+RELATÓRIO GERADO AUTOMATICAMENTE
+================================================================================
