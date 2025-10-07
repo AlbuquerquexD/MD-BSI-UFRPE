@@ -11,10 +11,15 @@ from repositories.orgao_resp_repository import OrgaoRespRepository
 from orgao_resp_insert import OrgaoRespService
 from repositories.area_licitada_repository import AreaLicitadaRepository
 from area_licitada_insert import AreaLicitadaService
+from repositories.silvicultura_repository import SilviculturaRepository
+from silvicultura_insert import SilviculturaService
+from repositories.projeto_repository import ProjetoRepository
+from projeto_insert import ProjetoService
+
 
 CSV_PATH = "datasets/cnae.csv"
 CSV_PATH_EMPRESA = "datasets/base_empresa.csv"
-CSV_PATH_DATASET_PMFS = "datasets/base_pmfs.csv"
+CSV_PATH_DATASET_PMFS = "datasets/base_pmfs_tratado.csv"
 
 
 def main():
@@ -79,6 +84,26 @@ def main():
 
         print(f"✅ {total_importados} registros importados.")
         print(f"📊 Total na tabela AreaLicitada: {total_final}")
+
+    with DatabaseConnection() as conn:
+        repo = SilviculturaRepository(conn)
+        service = SilviculturaService(repo)
+
+        total_importados = service.carregar_silvicultura(CSV_PATH_DATASET_PMFS)
+        total_final = repo.count()
+
+        print(f"✅ {total_importados} registros importados.")
+        print(f"📊 Total na tabela Silvicultura: {total_final}")
+
+    with DatabaseConnection() as conn:
+        repo = ProjetoRepository(conn)
+        service = ProjetoService(repo)
+
+        total_importados = service.carregar_projeto(CSV_PATH_DATASET_PMFS)
+        total_final = repo.count()
+
+        print(f"✅ {total_importados} registros importados.")
+        print(f"📊 Total na tabela Projetos: {total_final}")
 
 
 if __name__ == "__main__":
