@@ -7,6 +7,10 @@ from PMFS_Modalidade_insert import PMFSModalidadeService
 from repositories.pmfs_modalidade_repository import PMFSModalidadeRepository
 from repositories.municipio_repository import MunicipioRepository
 from municipio_insert import MunicipioService
+from repositories.orgao_resp_repository import OrgaoRespRepository
+from orgao_resp_insert import OrgaoRespService
+from repositories.area_licitada_repository import AreaLicitadaRepository
+from area_licitada_insert import AreaLicitadaService
 
 CSV_PATH = "datasets/cnae.csv"
 CSV_PATH_EMPRESA = "datasets/base_empresa.csv"
@@ -55,6 +59,26 @@ def main():
 
         print(f"✅ {total_importados} registros importados.")
         print(f"📊 Total na tabela Municipio: {total_final}")
+
+    with DatabaseConnection() as conn:
+        repo = OrgaoRespRepository(conn)
+        service = OrgaoRespService(repo)
+
+        total_importados = service.carregar_orgao(CSV_PATH_DATASET_PMFS)
+        total_final = repo.count()
+
+        print(f"✅ {total_importados} registros importados.")
+        print(f"📊 Total na tabela OrgaoResponsavel: {total_final}")
+
+    with DatabaseConnection() as conn:
+        repo = AreaLicitadaRepository(conn)
+        service = AreaLicitadaService(repo)
+
+        total_importados = service.carregar_area_licitada(CSV_PATH_DATASET_PMFS)
+        total_final = repo.count()
+
+        print(f"✅ {total_importados} registros importados.")
+        print(f"📊 Total na tabela AreaLicitada: {total_final}")
 
 
 if __name__ == "__main__":
