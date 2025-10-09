@@ -9,16 +9,21 @@ class AreaLicitadaRepository:
 
     def get_municipio_id(self, nome_municipio: str, uf: str) -> int:
         """Busca o ID do município pelo nome e UF."""
-        query = (
-            "SELECT ID_MUNICIPIO FROM MUNICIPIO WHERE NOME_MUNICIPIO = %s AND UF = %s"
-        )
-        with self.conn.cursor() as cursor:
+        query = """
+        SELECT ID_MUNICIPIO
+        FROM MUNICIPIO
+        WHERE NOME_MUNICIPIO = %s AND UF = %s
+        """
+        cursor = self.conn.cursor()
+        try:
             cursor.execute(query, (nome_municipio.upper(), uf.upper()))
             result = cursor.fetchone()
             if result:
                 return result[0]
             else:
                 raise ValueError(f"Município '{nome_municipio}' ({uf}) não encontrado.")
+        finally:
+            cursor.close()
 
     def insert_or_update(
         self,
@@ -35,9 +40,15 @@ class AreaLicitadaRepository:
         Recebe ID do município diretamente.
         """
         query = """
-        INSERT INTO AREA_LICITADA
-            (NRO_CAR_IMOVEL_RURAL, IMOVEL_RURAL_VINCULADO, NOME_EMPREENDIMENTO_VINC,
-             LATITUDE_EMPREENDIMENTO, ID_MUNICIPIO, LONGITUDE_EMPREENDIMENTO, AREA_TOTAL_PROPRIEDADE)
+        INSERT INTO AREA_LICITADA (
+            NRO_CAR_IMOVEL_RURAL,
+            IMOVEL_RURAL_VINCULADO,
+            NOME_EMPREENDIMENTO_VINC,
+            LATITUDE_EMPREENDIMENTO,
+            ID_MUNICIPIO,
+            LONGITUDE_EMPREENDIMENTO,
+            AREA_TOTAL_PROPRIEDADE
+        )
         VALUES (%s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
             IMOVEL_RURAL_VINCULADO = VALUES(IMOVEL_RURAL_VINCULADO),
@@ -46,7 +57,8 @@ class AreaLicitadaRepository:
             LONGITUDE_EMPREENDIMENTO = VALUES(LONGITUDE_EMPREENDIMENTO),
             AREA_TOTAL_PROPRIEDADE = VALUES(AREA_TOTAL_PROPRIEDADE);
         """
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute(
                 query,
                 (
@@ -59,9 +71,16 @@ class AreaLicitadaRepository:
                     area_total,
                 ),
             )
+            self.conn.commit()
+        finally:
+            cursor.close()
 
     def count(self) -> int:
         """Retorna o total de registros na tabela AREA_LICITADA."""
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute("SELECT COUNT(*) FROM AREA_LICITADA;")
-            return cursor.fetchone()[0]
+            result = cursor.fetchone()
+            return result[0] if result else 0
+        finally:
+            cursor.close()

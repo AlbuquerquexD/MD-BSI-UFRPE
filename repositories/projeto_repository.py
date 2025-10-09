@@ -44,7 +44,9 @@ class ProjetoRepository:
             NATUREZA_JURIDICA_PUBLICA = VALUES(NATUREZA_JURIDICA_PUBLICA),
             SILVICULTURA_ID_SILVICULTURA = VALUES(SILVICULTURA_ID_SILVICULTURA);
         """
-        with self.conn.cursor() as cursor:
+
+        cursor = self.conn.cursor()
+        try:
             cursor.execute(
                 query,
                 (
@@ -63,8 +65,15 @@ class ProjetoRepository:
                     silvicultura_id,
                 ),
             )
+            self.conn.commit()
+        finally:
+            cursor.close()
 
     def count(self) -> int:
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute("SELECT COUNT(*) FROM PROJETO;")
-            return cursor.fetchone()[0]
+            result = cursor.fetchone()
+            return result[0] if result else 0
+        finally:
+            cursor.close()

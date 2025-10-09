@@ -17,7 +17,14 @@ class EmpresaRepository:
         cnae: str,
     ):
         query = """
-        INSERT INTO EMPRESA (CNPJ, NOME_FANTASIA, RAZAO, SITUACAO_CADASTRAL, DATA_INICIO_ATIVIDADE, CODIGO_CNAE_FISCAL)
+        INSERT INTO EMPRESA (
+            CNPJ,
+            NOME_FANTASIA,
+            RAZAO,
+            SITUACAO_CADASTRAL,
+            DATA_INICIO_ATIVIDADE,
+            CODIGO_CNAE_FISCAL
+        )
         VALUES (%s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
             NOME_FANTASIA = VALUES(NOME_FANTASIA),
@@ -26,10 +33,18 @@ class EmpresaRepository:
             DATA_INICIO_ATIVIDADE = VALUES(DATA_INICIO_ATIVIDADE),
             CODIGO_CNAE_FISCAL = VALUES(CODIGO_CNAE_FISCAL);
         """
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute(query, (cnpj, nome, razao, situacao, data_inicio, cnae))
+            self.conn.commit()
+        finally:
+            cursor.close()
 
     def count(self) -> int:
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute("SELECT COUNT(*) FROM EMPRESA;")
-            return cursor.fetchone()[0]
+            result = cursor.fetchone()
+            return result[0] if result else 0
+        finally:
+            cursor.close()

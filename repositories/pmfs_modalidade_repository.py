@@ -13,10 +13,18 @@ class PMFSModalidadeRepository:
         VALUES (%s)
         ON DUPLICATE KEY UPDATE MODALIDADE_PMFS = VALUES(MODALIDADE_PMFS);
         """
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute(query, (descricao,))
+            self.conn.commit()
+        finally:
+            cursor.close()
 
     def count(self) -> int:
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute("SELECT COUNT(*) FROM PMFS_MODALIDADE;")
-            return cursor.fetchone()[0]
+            result = cursor.fetchone()
+            return result[0] if result else 0
+        finally:
+            cursor.close()

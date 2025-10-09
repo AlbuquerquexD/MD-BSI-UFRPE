@@ -12,17 +12,11 @@ class SilviculturaRepository:
         """
         Verifica se o valor informado é um CNPJ válido (14 dígitos numéricos).
         Ignora formatações como pontos, barras, hífens ou asteriscos.
-        Exemplo:
-        - "657.***.***-**" → CPF → False
-        - "02.023.852/0001-20" → CNPJ → True
         """
         if not cpfcnpj:
             return False
 
-        # Remove tudo que não for número
         digits = "".join(filter(str.isdigit, cpfcnpj))
-
-        # Retorna True somente se for um CNPJ (14 dígitos)
         return len(digits) == 14
 
     def insert_or_update(
@@ -39,8 +33,6 @@ class SilviculturaRepository:
         Insere ou atualiza um registro na tabela SILVICULTURA **somente se for CNPJ**.
         Retorna o ID do registro inserido ou None se não inseriu.
         """
-
-        # 🔒 Verifica se é CNPJ válido antes de inserir
         if not self.is_cnpj(cpfcnpj):
             return None
 
@@ -52,7 +44,8 @@ class SilviculturaRepository:
         VALUES (%s, %s, %s, %s, %s, %s);
         """
 
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute(
                 query,
                 (
@@ -65,10 +58,15 @@ class SilviculturaRepository:
                 ),
             )
             self.conn.commit()
-            # Retorna o ID gerado (mantém sincronia com PROJETO)
             return cursor.lastrowid
+        finally:
+            cursor.close()
 
     def count(self) -> int:
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute("SELECT COUNT(*) FROM SILVICULTURA;")
-            return cursor.fetchone()[0]
+            result = cursor.fetchone()
+            return result[0] if result else 0
+        finally:
+            cursor.close()

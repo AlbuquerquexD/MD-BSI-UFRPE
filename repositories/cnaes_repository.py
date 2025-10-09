@@ -13,10 +13,18 @@ class CnaeRepository:
         VALUES (%s, %s)
         ON DUPLICATE KEY UPDATE DESCRICAO_CNAE_FISCAL = VALUES(DESCRICAO_CNAE_FISCAL);
         """
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute(query, (codigo, descricao))
+            self.conn.commit()
+        finally:
+            cursor.close()
 
     def count(self) -> int:
-        with self.conn.cursor() as cursor:
+        cursor = self.conn.cursor()
+        try:
             cursor.execute("SELECT COUNT(*) FROM CNAES;")
-            return cursor.fetchone()[0]
+            result = cursor.fetchone()
+            return result[0] if result else 0
+        finally:
+            cursor.close()
