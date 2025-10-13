@@ -31,7 +31,7 @@ class EmpresaRepository:
             RAZAO = VALUES(RAZAO),
             SITUACAO_CADASTRAL = VALUES(SITUACAO_CADASTRAL),
             DATA_INICIO_ATIVIDADE = VALUES(DATA_INICIO_ATIVIDADE),
-            CODIGO_CNAE_FISCAL = VALUES(CODIGO_CNAE_FISCAL);
+            CNAES_CODIGO_CNAE_FISCAL = VALUES(CODIGO_CNAE_FISCAL);
         """
         cursor = self.conn.cursor()
         try:

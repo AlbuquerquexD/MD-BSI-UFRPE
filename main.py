@@ -1,20 +1,20 @@
 from database import DatabaseConnection
-from empresa_insert import EmpresaService
+from populacao_tabelas.empresa_insert import EmpresaService
 from repositories.cnaes_repository import CnaeRepository
-from cnae_insert import CnaeService
+from populacao_tabelas.cnae_insert import CnaeService
 from repositories.empresa_repository import EmpresaRepository
-from PMFS_Modalidade_insert import PMFSModalidadeService
+from populacao_tabelas.PMFS_Modalidade_insert import PMFSModalidadeService
 from repositories.pmfs_modalidade_repository import PMFSModalidadeRepository
 from repositories.municipio_repository import MunicipioRepository
-from municipio_insert import MunicipioService
+from populacao_tabelas.municipio_insert import MunicipioService
 from repositories.orgao_resp_repository import OrgaoRespRepository
-from orgao_resp_insert import OrgaoRespService
+from populacao_tabelas.orgao_resp_insert import OrgaoRespService
 from repositories.area_licitada_repository import AreaLicitadaRepository
-from area_licitada_insert import AreaLicitadaService
+from populacao_tabelas.area_licitada_insert import AreaLicitadaService
 from repositories.silvicultura_repository import SilviculturaRepository
-from silvicultura_insert import SilviculturaService
+from populacao_tabelas.silvicultura_insert import SilviculturaService
 from repositories.projeto_repository import ProjetoRepository
-from projeto_insert import ProjetoService
+from populacao_tabelas.projeto_insert import ProjetoService
 
 
 CSV_PATH = "datasets/cnae.csv"
