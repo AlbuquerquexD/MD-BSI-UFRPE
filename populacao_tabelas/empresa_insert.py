@@ -22,7 +22,7 @@ class EmpresaService:
                 razao = ""  # se não tiver, coloca vazio
                 situacao = linha["SITUACAO_CADASTRAL"].strip()
                 data_inicio = linha.get("DATA_INICIO_ATIVIDADE", "").strip()
-                cnae = linha["CNAE_FISCAL_PRINCIPAL"].strip()
+                cnae = linha["CNAE_FISCAL_PRINCIPAL"].zfill(7)
 
                 self.repository.insert_or_update(
                     cnpj, nome, razao, situacao, data_inicio, cnae
