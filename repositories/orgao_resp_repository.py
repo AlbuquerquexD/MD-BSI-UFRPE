@@ -31,3 +31,14 @@ class OrgaoRespRepository:
             return result[0] if result else 0
         finally:
             cursor.close()
+            
+    def get_all_as_map(self) -> dict[str, int]:
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("SELECT ID, NOME_ORGAO FROM ORGAO_RESP_TECNICO")
+            return {nome_orgao: org_id for org_id, nome_orgao in cursor.fetchall()}
+        except Exception as e:
+            print(f"Erro ao criar mapa de órgãos: {e}")
+            return {}
+        finally:
+            cursor.close()

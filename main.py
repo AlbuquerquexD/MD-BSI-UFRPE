@@ -3,11 +3,16 @@
 from database import DatabaseConnection
 
 # Imports para as tabelas principais e de domínio
-from populacao_tabelas.projeto_empresa_insert import ProjetoEmpresaService
+from populacao_tabelas.orgao_resp_tecnico_projeto_insert import (
+    OrgaoRespTecnicoProjetoService,
+)
 from repositories.cnaes_repository import CnaeRepository
 from populacao_tabelas.cnae_insert import CnaeService
 from repositories.empresa_repository import EmpresaRepository
 from populacao_tabelas.empresa_insert import EmpresaService
+from repositories.orgao_resp_tecnico_projeto_repository import (
+    OrgaoRespTecnicoProjetoRepository,
+)
 from repositories.pmfs_modalidade_repository import PMFSModalidadeRepository
 from populacao_tabelas.PMFS_Modalidade_insert import PMFSModalidadeService
 from repositories.municipio_repository import MunicipioRepository
@@ -141,7 +146,7 @@ def main():
 
         print(f"✅ {total_importados} relacionamentos importados.")
         print(f"📊 Total na tabela PROJETO_PMFS_MODALIDADE: {total_final}\n")
-    
+
     print("🚀 Iniciando importação do relacionamento Projeto x Modalidade...")
     with DatabaseConnection() as conn:
         # ... (código existente)
@@ -153,7 +158,7 @@ def main():
     with DatabaseConnection() as conn:
         # Precisamos dos repositórios para inserir e para consultar
         repo_relacionamento_imovel = ProjetoImovelRepository(conn)
-        repo_area_licitada = AreaLicitadaRepository(conn) # Para o lookup
+        repo_area_licitada = AreaLicitadaRepository(conn)  # Para o lookup
 
         service = ProjetoImovelService(repo_relacionamento_imovel, repo_area_licitada)
 
@@ -162,6 +167,22 @@ def main():
 
         print(f"✅ {total_importados} relacionamentos importados.")
         print(f"📊 Total na tabela PROJETO_IMOVEL: {total_final}\n")
+
+    print("🚀 Iniciando importação do relacionamento Órgão Técnico x Projeto...")
+    with DatabaseConnection() as conn:
+        repo_relacionamento_orgao = OrgaoRespTecnicoProjetoRepository(conn)
+        repo_orgao = OrgaoRespRepository(conn)
+        repo_projeto = ProjetoRepository(conn)
+
+        service = OrgaoRespTecnicoProjetoService(
+            repo_relacionamento_orgao, repo_orgao, repo_projeto
+        )
+
+        total_importados = service.carregar_relacionamento(CSV_PATH_DATASET_PMFS)
+        total_final = repo_relacionamento_orgao.count()
+
+        print(f"✅ {total_importados} relacionamentos importados.")
+        print(f"📊 Total na tabela ORGAO_RESP_TECNICO_PROJETO: {total_final}\n")
 
     print("🎉 Processo de importação finalizado com sucesso!")
 
