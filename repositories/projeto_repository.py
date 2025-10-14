@@ -1,9 +1,6 @@
 from typing import Any
 
-
 class ProjetoRepository:
-    """Repositório para tabela PROJETO."""
-
     def __init__(self, connection: Any):
         self.conn = connection
 
@@ -22,14 +19,15 @@ class ProjetoRepository:
         tipo_empreendimento_rural: int | None,
         natureza_juridica_publica: int | None,
         silvicultura_id: int,
+        empresa_cnpj: str,
     ):
         query = """
         INSERT INTO PROJETO (
             NRO_REGISTRO, NRO_AUTORIZACAO, DATA_DE_EMISSAO, ANO_AUTORIZACAO,
             DESCRICAO_AUTORIZACAO, DATA_DE_VALIDADE, SITUACAO, DATA_SITUACAO,
             ULTIMO_TRAMITE, DATA_DO_TRAMITE, TIPO_DE_EMPREENDIMENTO_RURAL,
-            NATUREZA_JURIDICA_PUBLICA, SILVICULTURA_ID_SILVICULTURA
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            NATUREZA_JURIDICA_PUBLICA, SILVICULTURA_ID_SILVICULTURA, EMPRESA_CNPJ
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
             NRO_AUTORIZACAO = VALUES(NRO_AUTORIZACAO),
             DATA_DE_EMISSAO = VALUES(DATA_DE_EMISSAO),
@@ -42,7 +40,8 @@ class ProjetoRepository:
             DATA_DO_TRAMITE = VALUES(DATA_DO_TRAMITE),
             TIPO_DE_EMPREENDIMENTO_RURAL = VALUES(TIPO_DE_EMPREENDIMENTO_RURAL),
             NATUREZA_JURIDICA_PUBLICA = VALUES(NATUREZA_JURIDICA_PUBLICA),
-            SILVICULTURA_ID_SILVICULTURA = VALUES(SILVICULTURA_ID_SILVICULTURA);
+            SILVICULTURA_ID_SILVICULTURA = VALUES(SILVICULTURA_ID_SILVICULTURA),
+            EMPRESA_CNPJ = VALUES(EMPRESA_CNPJ);
         """
 
         cursor = self.conn.cursor()
@@ -63,9 +62,9 @@ class ProjetoRepository:
                     tipo_empreendimento_rural,
                     natureza_juridica_publica,
                     silvicultura_id,
+                    empresa_cnpj,
                 ),
             )
-            self.conn.commit()
         finally:
             cursor.close()
 
@@ -75,5 +74,13 @@ class ProjetoRepository:
             cursor.execute("SELECT COUNT(*) FROM PROJETO;")
             result = cursor.fetchone()
             return result[0] if result else 0
+        finally:
+            cursor.close()
+
+    def get_all_nros_registro_as_set(self):
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("SELECT NRO_REGISTRO FROM PROJETO")
+            return {row[0] for row in cursor.fetchall()}
         finally:
             cursor.close()

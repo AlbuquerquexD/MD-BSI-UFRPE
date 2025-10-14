@@ -162,24 +162,6 @@ def main():
 
         print(f"✅ {total_importados} relacionamentos importados.")
         print(f"📊 Total na tabela PROJETO_IMOVEL: {total_final}\n")
-        
-    print("🚀 Iniciando importação do relacionamento Projeto x Empresa...")
-    with DatabaseConnection() as conn:
-        # Instancia o repositório responsável pela tabela PROJETO_EMPRESA
-        repo_relacionamento_empresa = ProjetoEmpresaRepository(conn)
-        
-        # Instancia o serviço, passando o repositório
-        service = ProjetoEmpresaService(repo_relacionamento_empresa)
-
-        # Chama o método para carregar os dados do CSV
-        total_importados = service.carregar_relacionamento(CSV_PATH_DATASET_PMFS)
-        
-        # Conta o total de registros após a importação
-        total_final = repo_relacionamento_empresa.count()
-
-        print(f"✅ {total_importados} relacionamentos importados.")
-        print(f"📊 Total na tabela PROJETO_EMPRESA: {total_final}\n")
-
 
     print("🎉 Processo de importação finalizado com sucesso!")
 
