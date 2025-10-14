@@ -44,12 +44,42 @@ CSV_PATH_CNAE = "datasets/cnae.csv"
 CSV_PATH_EMPRESA = "datasets/base_empresa.csv"
 CSV_PATH_DATASET_PMFS = "datasets/base_pmfs_cpf_retirado.csv"
 
+DB_SCHEMA_NAME = "PMFS_AMAZONAS"
+SQL_SCRIPT_PATH = "datasets/create_table.sql"
+
 
 def main():
     """
     Função principal para executar a importação de dados
     para todas as tabelas do banco de dados.
     """
+
+    print(f"🚀 Recreating database schema '{DB_SCHEMA_NAME}'...")
+    try:
+        with DatabaseConnection() as conn:
+            cursor = conn.cursor()
+            
+            print(f"   - Dropping schema '{DB_SCHEMA_NAME}' if it exists...")
+            cursor.execute(f"DROP SCHEMA IF EXISTS `{DB_SCHEMA_NAME}`")
+            conn.commit()
+            
+            print(f"   - Executing creation script from '{SQL_SCRIPT_PATH}'...")
+            with open(SQL_SCRIPT_PATH, "r", encoding="utf-8") as sql_file:
+                sql_script = sql_file.read()
+            
+            sql_commands = [cmd.strip() for cmd in sql_script.split(';') if cmd.strip()]
+            
+            for command in sql_commands:
+                cursor.execute(command)
+            
+            conn.commit()
+        print("✅ Database schema recreated successfully.\n")
+    except FileNotFoundError:
+        print(f"🚨 CRITICAL ERROR: '{SQL_SCRIPT_PATH}' not found. Aborting process.")
+        return
+    except Exception as e:
+        print(f"🚨 CRITICAL ERROR during schema execution: {e}. Aborting process.")
+        return
 
     # 1. Popula a tabela CNAES (tabela de domínio)
     print("🚀 Iniciando importação CNAE...")

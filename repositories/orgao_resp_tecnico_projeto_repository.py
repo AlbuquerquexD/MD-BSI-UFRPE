@@ -25,7 +25,8 @@ class OrgaoRespTecnicoProjetoRepository:
                 (orgao_id, nro_registro, nro_art, atividade_rt, competencia_avaliacao),
             )
         except Exception as e:
-            print(f"Erro ao inserir relacionamento para ORGAO_ID {orgao_id} e NRO_REGISTRO {nro_registro}: {e}")
+            pass
+            # print(f"Erro ao inserir relacionamento para ORGAO_ID {orgao_id} e NRO_REGISTRO {nro_registro}: {e}")
         finally:
             cursor.close()
 

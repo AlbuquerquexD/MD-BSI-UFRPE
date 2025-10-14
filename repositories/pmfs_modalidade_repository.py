@@ -10,7 +10,7 @@ class PMFSModalidadeRepository:
 
     def insert_or_update(self, descricao: str):
         # --- PRINT DE DEPURAÇÃO PARA CONFIRMAR EXECUÇÃO ---
-        print(f"DEBUG: Repositório executando INSERT IGNORE para '{descricao}'")
+        # print(f"DEBUG: Repositório executando INSERT IGNORE para '{descricao}'")
         
         query = """
         INSERT IGNORE INTO PMFS_MODALIDADE (MODALIDADE_PMFS)
