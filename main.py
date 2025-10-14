@@ -1,10 +1,14 @@
+# main.py
+
 from database import DatabaseConnection
-from populacao_tabelas.empresa_insert import EmpresaService
+
+# Imports para as tabelas principais e de domínio
 from repositories.cnaes_repository import CnaeRepository
 from populacao_tabelas.cnae_insert import CnaeService
 from repositories.empresa_repository import EmpresaRepository
-from populacao_tabelas.PMFS_Modalidade_insert import PMFSModalidadeService
+from populacao_tabelas.empresa_insert import EmpresaService
 from repositories.pmfs_modalidade_repository import PMFSModalidadeRepository
+from populacao_tabelas.PMFS_Modalidade_insert import PMFSModalidadeService
 from repositories.municipio_repository import MunicipioRepository
 from populacao_tabelas.municipio_insert import MunicipioService
 from repositories.orgao_resp_repository import OrgaoRespRepository
@@ -16,94 +20,124 @@ from populacao_tabelas.silvicultura_insert import SilviculturaService
 from repositories.projeto_repository import ProjetoRepository
 from populacao_tabelas.projeto_insert import ProjetoService
 
+# --- NOVOS IMPORTS para a tabela de relacionamento ---
+from repositories.projeto_pmfs_modalidade_repository import (
+    ProjetoPmfsModalidadeRepository,
+)
+from populacao_tabelas.projeto_pmfs_modalidade_insert import (
+    ProjetoPmfsModalidadeService,
+)
 
-CSV_PATH = "datasets/cnae.csv"
+
+# --- Caminhos dos arquivos de dados ---
+CSV_PATH_CNAE = "datasets/cnae.csv"
 CSV_PATH_EMPRESA = "datasets/base_empresa.csv"
 CSV_PATH_DATASET_PMFS = "datasets/base_pmfs_tratado.csv"
 
 
 def main():
-    print("🚀 Iniciando importação CNAE...")
+    """
+    Função principal para executar a importação de dados
+    para todas as tabelas do banco de dados.
+    """
 
+    # 1. Popula a tabela CNAES (tabela de domínio)
+    print("🚀 Iniciando importação CNAE...")
     with DatabaseConnection() as conn:
         repo = CnaeRepository(conn)
         service = CnaeService(repo)
-
-        total_importados = service.carregar_cnae(CSV_PATH)
+        total_importados = service.carregar_cnae(CSV_PATH_CNAE)
         total_final = repo.count()
-
         print(f"✅ {total_importados} registros importados.")
-        print(f"📊 Total na tabela CNAES: {total_final}")
+        print(f"📊 Total na tabela CNAES: {total_final}\n")
 
+    # 2. Popula a tabela EMPRESA (depende de CNAES)
+    print("🚀 Iniciando importação EMPRESA...")
     with DatabaseConnection() as conn:
         repo = EmpresaRepository(conn)
         service = EmpresaService(repo)
-
         total_importados = service.carregar_empresa(CSV_PATH_EMPRESA)
         total_final = repo.count()
-
         print(f"✅ {total_importados} registros importados.")
-        print(f"📊 Total na tabela EMPRESA: {total_final}")
+        print(f"📊 Total na tabela EMPRESA: {total_final}\n")
 
+    # 3. Popula a tabela PMFS_MODALIDADE (tabela de domínio)
+    print("🚀 Iniciando importação PMFS_MODALIDADE...")
     with DatabaseConnection() as conn:
         repo = PMFSModalidadeRepository(conn)
         service = PMFSModalidadeService(repo)
-
         total_importados = service.carregar_modalidade(CSV_PATH_DATASET_PMFS)
         total_final = repo.count()
-
         print(f"✅ {total_importados} registros importados.")
-        print(f"📊 Total na tabela PMFS: {total_final}")
+        print(f"📊 Total na tabela PMFS_MODALIDADE: {total_final}\n")
 
+    # 4. Popula a tabela MUNICIPIO (tabela de domínio)
+    print("🚀 Iniciando importação MUNICIPIO...")
     with DatabaseConnection() as conn:
         repo = MunicipioRepository(conn)
         service = MunicipioService(repo)
-
         total_importados = service.carregar_municipio(CSV_PATH_DATASET_PMFS)
         total_final = repo.count()
-
         print(f"✅ {total_importados} registros importados.")
-        print(f"📊 Total na tabela Municipio: {total_final}")
+        print(f"📊 Total na tabela MUNICIPIO: {total_final}\n")
 
+    # 5. Popula a tabela ORGAO_RESPONSAVEL (tabela de domínio)
+    print("🚀 Iniciando importação ORGAO_RESPONSAVEL...")
     with DatabaseConnection() as conn:
         repo = OrgaoRespRepository(conn)
         service = OrgaoRespService(repo)
-
         total_importados = service.carregar_orgao(CSV_PATH_DATASET_PMFS)
         total_final = repo.count()
-
         print(f"✅ {total_importados} registros importados.")
-        print(f"📊 Total na tabela OrgaoResponsavel: {total_final}")
+        print(f"📊 Total na tabela ORGAO_RESPONSAVEL: {total_final}\n")
 
+    # 6. Popula a tabela AREA_LICITADA (tabela de domínio)
+    print("🚀 Iniciando importação AREA_LICITADA...")
     with DatabaseConnection() as conn:
         repo = AreaLicitadaRepository(conn)
         service = AreaLicitadaService(repo)
-
         total_importados = service.carregar_area_licitada(CSV_PATH_DATASET_PMFS)
         total_final = repo.count()
-
         print(f"✅ {total_importados} registros importados.")
-        print(f"📊 Total na tabela AreaLicitada: {total_final}")
+        print(f"📊 Total na tabela AREA_LICITADA: {total_final}\n")
 
+    # 7. Popula a tabela SILVICULTURA (tabela de domínio)
+    print("🚀 Iniciando importação SILVICULTURA...")
     with DatabaseConnection() as conn:
         repo = SilviculturaRepository(conn)
         service = SilviculturaService(repo)
-
         total_importados = service.carregar_silvicultura(CSV_PATH_DATASET_PMFS)
         total_final = repo.count()
-
         print(f"✅ {total_importados} registros importados.")
-        print(f"📊 Total na tabela Silvicultura: {total_final}")
+        print(f"📊 Total na tabela SILVICULTURA: {total_final}\n")
 
+    # 8. Popula a tabela PROJETO (depende das tabelas de domínio acima)
+    print("🚀 Iniciando importação PROJETO...")
     with DatabaseConnection() as conn:
         repo = ProjetoRepository(conn)
         service = ProjetoService(repo)
-
         total_importados = service.carregar_projeto(CSV_PATH_DATASET_PMFS)
         total_final = repo.count()
-
         print(f"✅ {total_importados} registros importados.")
-        print(f"📊 Total na tabela Projetos: {total_final}")
+        print(f"📊 Total na tabela PROJETO: {total_final}\n")
+
+    # --- ETAPA FINAL ---
+    # 9. Popula a tabela de relacionamento PROJETO_PMFS_MODALIDADE
+    # (depende de PROJETO e PMFS_MODALIDADE estarem populadas)
+    print("🚀 Iniciando importação do relacionamento Projeto x Modalidade...")
+    with DatabaseConnection() as conn:
+        repo_relacionamento = ProjetoPmfsModalidadeRepository(conn)
+        repo_modalidade = PMFSModalidadeRepository(conn)  # Usado para consulta
+
+        service = ProjetoPmfsModalidadeService(repo_relacionamento, repo_modalidade)
+
+        total_importados = service.carregar_relacionamento(CSV_PATH_DATASET_PMFS)
+        total_final = repo_relacionamento.count()
+
+        print(f"✅ {total_importados} relacionamentos importados.")
+        print(f"📊 Total na tabela PROJETO_PMFS_MODALIDADE: {total_final}\n")
+
+    print("🎉 Processo de importação finalizado com sucesso!")
 
 
 if __name__ == "__main__":

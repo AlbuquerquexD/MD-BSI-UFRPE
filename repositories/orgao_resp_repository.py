@@ -12,7 +12,7 @@ class OrgaoRespRepository:
         Insere um órgão responsável ou atualiza o nome caso já exista (evita duplicados).
         """
         query = """
-        INSERT INTO ORGAO_RESP_TECNICO (NOME_ORGAO)
+        INSERT IGNORE INTO ORGAO_RESP_TECNICO (NOME_ORGAO)
         VALUES (%s)
         ON DUPLICATE KEY UPDATE NOME_ORGAO = VALUES(NOME_ORGAO);
         """
