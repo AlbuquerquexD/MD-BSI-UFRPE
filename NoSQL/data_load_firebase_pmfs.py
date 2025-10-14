@@ -10,7 +10,7 @@ db = firestore.client()
 
 # Carregar CSV
 df = pd.read_csv("data/PMFS Amazônia Legal - pmfsAmazoniaLegal_LIMPA.csv", sep=",", encoding="utf-8")
-n= 0
+
 # Agrupar por projeto
 for nro_registro, grupo in df.groupby("NRO_REGISTRO"):
     data = grupo.iloc[0]
@@ -73,7 +73,6 @@ for nro_registro, grupo in df.groupby("NRO_REGISTRO"):
         },
         "modalidades_pmfs": grupo["MODALIDADE_PMFS"].unique().tolist()
     }
-    n+=1
-    print(n)
+
     # Salvar no Firestore
     db.collection("projetos").document(str(nro_registro)).set(documento)

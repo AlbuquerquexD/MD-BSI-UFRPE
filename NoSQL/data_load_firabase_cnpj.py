@@ -11,7 +11,6 @@ db = firestore.client()
 df = pd.read_csv("data/base_cnpj.csv", sep=",", encoding="utf-8")
 
 # Intera sobre as linhas do df
-n = 0
 for _, row in df.iterrows():
     documento = {
         "nome_fantasia": row["NOME_FANTASIA"],
@@ -21,7 +20,5 @@ for _, row in df.iterrows():
         "cnpj": str(row["CNPJ"])
     }
 
-    n+=1
-    print(n)
     #Salvar na coleção "empresas"
     db.collection("empresas").document(documento["cnpj"]).set(documento)
