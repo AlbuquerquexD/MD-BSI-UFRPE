@@ -3,6 +3,7 @@
 from database import DatabaseConnection
 
 # Imports para as tabelas principais e de domínio
+from populacao_tabelas.projeto_empresa_insert import ProjetoEmpresaService
 from repositories.cnaes_repository import CnaeRepository
 from populacao_tabelas.cnae_insert import CnaeService
 from repositories.empresa_repository import EmpresaRepository
@@ -15,10 +16,14 @@ from repositories.orgao_resp_repository import OrgaoRespRepository
 from populacao_tabelas.orgao_resp_insert import OrgaoRespService
 from repositories.area_licitada_repository import AreaLicitadaRepository
 from populacao_tabelas.area_licitada_insert import AreaLicitadaService
+from repositories.projeto_empresa_repository import ProjetoEmpresaRepository
 from repositories.silvicultura_repository import SilviculturaRepository
 from populacao_tabelas.silvicultura_insert import SilviculturaService
 from repositories.projeto_repository import ProjetoRepository
 from populacao_tabelas.projeto_insert import ProjetoService
+from repositories.projeto_imovel_repository import ProjetoImovelRepository
+from populacao_tabelas.projeto_imovel_insert import ProjetoImovelService
+
 
 # --- NOVOS IMPORTS para a tabela de relacionamento ---
 from repositories.projeto_pmfs_modalidade_repository import (
@@ -32,7 +37,7 @@ from populacao_tabelas.projeto_pmfs_modalidade_insert import (
 # --- Caminhos dos arquivos de dados ---
 CSV_PATH_CNAE = "datasets/cnae.csv"
 CSV_PATH_EMPRESA = "datasets/base_empresa.csv"
-CSV_PATH_DATASET_PMFS = "datasets/base_pmfs_tratado.csv"
+CSV_PATH_DATASET_PMFS = "datasets/base_pmfs_cpf_retirado.csv"
 
 
 def main():
@@ -136,6 +141,45 @@ def main():
 
         print(f"✅ {total_importados} relacionamentos importados.")
         print(f"📊 Total na tabela PROJETO_PMFS_MODALIDADE: {total_final}\n")
+    
+    print("🚀 Iniciando importação do relacionamento Projeto x Modalidade...")
+    with DatabaseConnection() as conn:
+        # ... (código existente)
+        print(f"✅ {total_importados} relacionamentos importados.")
+        print(f"📊 Total na tabela PROJETO_PMFS_MODALIDADE: {total_final}\n")
+
+    # 10. Popula a tabela de relacionamento PROJETO_IMOVEL
+    print("🚀 Iniciando importação do relacionamento Projeto x Imóvel...")
+    with DatabaseConnection() as conn:
+        # Precisamos dos repositórios para inserir e para consultar
+        repo_relacionamento_imovel = ProjetoImovelRepository(conn)
+        repo_area_licitada = AreaLicitadaRepository(conn) # Para o lookup
+
+        service = ProjetoImovelService(repo_relacionamento_imovel, repo_area_licitada)
+
+        total_importados = service.carregar_relacionamento(CSV_PATH_DATASET_PMFS)
+        total_final = repo_relacionamento_imovel.count()
+
+        print(f"✅ {total_importados} relacionamentos importados.")
+        print(f"📊 Total na tabela PROJETO_IMOVEL: {total_final}\n")
+        
+    print("🚀 Iniciando importação do relacionamento Projeto x Empresa...")
+    with DatabaseConnection() as conn:
+        # Instancia o repositório responsável pela tabela PROJETO_EMPRESA
+        repo_relacionamento_empresa = ProjetoEmpresaRepository(conn)
+        
+        # Instancia o serviço, passando o repositório
+        service = ProjetoEmpresaService(repo_relacionamento_empresa)
+
+        # Chama o método para carregar os dados do CSV
+        total_importados = service.carregar_relacionamento(CSV_PATH_DATASET_PMFS)
+        
+        # Conta o total de registros após a importação
+        total_final = repo_relacionamento_empresa.count()
+
+        print(f"✅ {total_importados} relacionamentos importados.")
+        print(f"📊 Total na tabela PROJETO_EMPRESA: {total_final}\n")
+
 
     print("🎉 Processo de importação finalizado com sucesso!")
 

@@ -7,6 +7,23 @@ class AreaLicitadaRepository:
     def __init__(self, connection: Any):
         self.conn = connection
 
+    def get_all_as_map(self):
+        """
+        Busca todos os imóveis com CAR e retorna um dicionário (mapa)
+        no formato {'NRO_CAR_IMOVEL_RURAL': ID_IMOVEL}.
+        """
+        cursor = self.conn.cursor()
+        # Selecionamos apenas os que possuem CAR para criar um mapa limpo
+        cursor.execute("""
+            SELECT ID_IMOVEL, NRO_CAR_IMOVEL_RURAL 
+            FROM AREA_LICITADA 
+            WHERE NRO_CAR_IMOVEL_RURAL IS NOT NULL
+        """)
+        # Cria o dicionário para busca rápida: {nro_car: id}
+        imovel_map = {nro_car: id_ for id_, nro_car in cursor.fetchall()}
+        cursor.close()
+        return imovel_map
+
     def get_municipio_id(self, nome_municipio: str, uf: str) -> int:
         """Busca o ID do município pelo nome e UF."""
         query = """

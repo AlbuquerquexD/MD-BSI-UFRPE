@@ -17,7 +17,7 @@ class EmpresaService:
             )
 
             for linha in reader:
-                cnpj = linha["CNPJ"].strip()
+                cnpj = linha["CNPJ"].zfill(14)
                 nome = linha["NOME_FANTASIA"].strip()
                 razao = ""  # se não tiver, coloca vazio
                 situacao = linha["SITUACAO_CADASTRAL"].strip()

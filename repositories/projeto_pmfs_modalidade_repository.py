@@ -17,7 +17,7 @@ class ProjetoPmfsModalidadeRepository:
         except Exception as e:
             # Opcional: tratar exceções como registros duplicados, se necessário
             print(
-                f"Erro ao inserir relacionamento para NRO_REGISTRO {nro_registro}: {e}"
+                f"Erro ao inserir relacionamento para NRO_REGISTRO(O cpf ainda ficou na base, n sei como. releva) {nro_registro}: {e}"
             )
         finally:
             cursor.close()

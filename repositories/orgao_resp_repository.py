@@ -13,8 +13,7 @@ class OrgaoRespRepository:
         """
         query = """
         INSERT IGNORE INTO ORGAO_RESP_TECNICO (NOME_ORGAO)
-        VALUES (%s)
-        ON DUPLICATE KEY UPDATE NOME_ORGAO = VALUES(NOME_ORGAO);
+        VALUES (%s);
         """
         cursor = self.conn.cursor()
         try:
