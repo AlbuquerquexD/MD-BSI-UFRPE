@@ -39,14 +39,14 @@ class ProjetoImovelService:
             nro_car = str(nro_car).strip()
 
             # Busca o ID do imóvel no mapa que carregamos
-            id_imovel = imovel_map.get(nro_car)
+            id_empreendimeto = imovel_map.get(nro_car)
 
-            if nro_registro and id_imovel:
-                self.relacionamento_repo.inserir_relacionamento(nro_registro, id_imovel)
+            if nro_registro and id_empreendimeto:
+                self.relacionamento_repo.inserir_relacionamento(nro_registro, id_empreendimeto)
                 registros_importados += 1
             else:
                 # O aviso agora só será exibido para CARs que existem no CSV mas não no banco
-                if not id_imovel and nro_car:
+                if not id_empreendimeto and nro_car:
                     print(f"⚠️ Aviso: Imóvel com CAR '{nro_car}' não encontrado no banco. Pulando linha {index}.")
 
         self.relacionamento_repo.conn.commit()

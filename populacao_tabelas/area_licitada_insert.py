@@ -30,6 +30,9 @@ class AreaLicitadaService:
             reader = csv.DictReader(file)  # Usa cabeçalho do CSV
             for linha in reader:
                 try:
+                    tipo_de_empreendimento = linha["TIPO_DE_EMPREENDIMENTO"].strip()
+                    natureza_juridica = linha["NATUREZA_JURIDICA"].strip()
+                    competencia_avaliacao = linha["COMPETENCIA_AVALIACAO"].strip()
                     nro_car = linha["NRO_CAR_IMOVEL_RURAL"].strip()
                     imovel_vinculado = linha["IMOVEL_RURAL_VINCULADO"].strip()
                     nome_empreendimento = linha["NOME_EMPREENDIMENTO_VINC"].strip()
@@ -49,6 +52,9 @@ class AreaLicitadaService:
                     id_municipio = self.repository.get_municipio_id(nome_municipio, uf)
 
                     self.repository.insert_or_update(
+                        tipo_de_empreendimento=tipo_de_empreendimento,
+                        natureza_juridica=natureza_juridica,
+                        competencia_avaliacao=competencia_avaliacao,
                         nro_car=nro_car,
                         imovel_vinculado=imovel_vinculado,
                         nome_empreendimento=nome_empreendimento,

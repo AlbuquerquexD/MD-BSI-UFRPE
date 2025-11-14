@@ -15,7 +15,7 @@ class AreaLicitadaRepository:
         cursor = self.conn.cursor()
         # Selecionamos apenas os que possuem CAR para criar um mapa limpo
         cursor.execute("""
-            SELECT ID_IMOVEL, NRO_CAR_IMOVEL_RURAL 
+            SELECT ID_EMPREENDIMENTO, NRO_CAR_IMOVEL_RURAL 
             FROM AREA_LICITADA 
             WHERE NRO_CAR_IMOVEL_RURAL IS NOT NULL
         """)
@@ -44,6 +44,9 @@ class AreaLicitadaRepository:
 
     def insert_or_update(
         self,
+        tipo_de_empreendimento: str,
+        natureza_juridica: str,
+        competencia_avaliacao: str,
         nro_car: str,
         imovel_vinculado: str,
         nome_empreendimento: str,
@@ -58,6 +61,9 @@ class AreaLicitadaRepository:
         """
         query = """
         INSERT INTO AREA_LICITADA (
+            TIPO_DE_EMPREENDIMENTO,
+            NATUREZA_JURIDICA,
+            COMPETENCIA_AVALIACAO,
             NRO_CAR_IMOVEL_RURAL,
             IMOVEL_RURAL_VINCULADO,
             NOME_EMPREENDIMENTO_VINC,
@@ -66,7 +72,7 @@ class AreaLicitadaRepository:
             LONGITUDE_EMPREENDIMENTO,
             AREA_TOTAL_PROPRIEDADE
         )
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         ON DUPLICATE KEY UPDATE
             IMOVEL_RURAL_VINCULADO = VALUES(IMOVEL_RURAL_VINCULADO),
             NOME_EMPREENDIMENTO_VINC = VALUES(NOME_EMPREENDIMENTO_VINC),
@@ -79,6 +85,9 @@ class AreaLicitadaRepository:
             cursor.execute(
                 query,
                 (
+                    tipo_de_empreendimento,
+                    natureza_juridica,
+                    competencia_avaliacao,
                     nro_car,
                     imovel_vinculado,
                     nome_empreendimento,
