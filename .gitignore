@@ -1,0 +1,29 @@
+# Ambientes Virtuais
+venv/
+.venv/
+env/
+.env
+
+# Cache e arquivos compilados do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Pastas de distribuição / build
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Arquivos de IDE e editores
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Arquivos de dependências (é melhor usar requirements.txt ou pyproject.toml)
+*.pip
+*.local
+pip-log.txt
+
