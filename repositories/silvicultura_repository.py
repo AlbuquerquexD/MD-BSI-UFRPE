@@ -22,6 +22,8 @@ class SilviculturaRepository:
     def insert_or_update(
         self,
         ciclo_corte: float | None,
+        sistema_silvicultural: str | None,
+        metodo_extracao: str | None,
         area_manejo_forestal: float | None,
         area_efetivo_manejo: float | None,
         capacidade_produtiva: float | None,
@@ -38,10 +40,10 @@ class SilviculturaRepository:
 
         query = """
         INSERT INTO SILVICULTURA (
-            CICLO_CORTE, AREA_MANEJO_FLORESTAL, AREA_EFETIVO_MANEJO,
+            CICLO_CORTE, SISTEMA_SILVICULTURAL, METODO_EXTRACAO, AREA_MANEJO_FLORESTAL, AREA_EFETIVO_MANEJO,
             CAPACIDADE_PRODUTIVA, ESTIMATIVA_PRODUTIVA_ANUAL, INTENSIDADE_CORTE
         )
-        VALUES (%s, %s, %s, %s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
         """
 
         cursor = self.conn.cursor()
@@ -50,6 +52,8 @@ class SilviculturaRepository:
                 query,
                 (
                     ciclo_corte,
+                    sistema_silvicultural,
+                    metodo_extracao,
                     area_manejo_forestal,
                     area_efetivo_manejo,
                     capacidade_produtiva,

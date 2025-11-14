@@ -32,7 +32,7 @@ class SilviculturaService:
         """
         Lê CSV e insere ou atualiza registros na tabela SILVICULTURA.
         Espera as colunas:
-        CICLO_CORTE, AREA_MANEJO_FLORESTAL, AREA_EFETIVO_MANEJO,
+        CICLO_CORTE, SISTEMA_SILVICULTURAL, AREA_MANEJO_FLORESTAL, AREA_EFETIVO_MANEJO,
         CAPACIDADE_PRODUTIVA, ESTIMATIVA_PRODUTIVA_ANUAL, INTENSIDADE_CORTE
         """
         registros_importados = 0
@@ -43,6 +43,8 @@ class SilviculturaService:
             for linha in reader:
                 try:
                     ciclo_corte = self.parse_decimal(linha["CICLO_CORTE"])
+                    sistema_silvicultural = linha["SISTEMA_SILVICULTURAL"]
+                    metodo_extracao = linha["METODO_EXTRACAO"]
                     area_manejo = self.parse_decimal(linha["AREA_MANEJO_FLORESTAL"])
                     area_efetivo = self.parse_decimal(linha["AREA_EFETIVO_MANEJO"])
                     capacidade = self.parse_decimal(linha["CAPACIDADE_PRODUTIVA"])
@@ -52,6 +54,8 @@ class SilviculturaService:
 
                     self.repository.insert_or_update(
                         ciclo_corte=ciclo_corte,
+                        sistema_silvicultural=sistema_silvicultural,
+                        metodo_extracao=metodo_extracao,
                         area_manejo_forestal=area_manejo,
                         area_efetivo_manejo=area_efetivo,
                         capacidade_produtiva=capacidade,
