@@ -223,7 +223,20 @@ def build_rows_from_dates(dates, starting_sk, date_map=None):
         estacao_ano = get_season(mes, dia)
         eh_feriado = 1 if pd.Timestamp(d) in br_holidays else 0
         eh_dia_util = 1 if (eh_final_de_semana == 0 and eh_feriado == 0) else 0
-        eh_ano_eleitoral, tipo_eleicao = (0, 0)  # não inferimos por arquivo aqui
+        
+        # Determinar ano eleitoral e tipo de eleição
+        # Anos divisíveis por 4: eleições gerais (presidente, governador, senador, deputados) - tipo 1
+        # Anos pares não divisíveis por 4: eleições municipais (prefeito, vereador) - tipo 2
+        if ano % 2 == 0:  # ano par
+            eh_ano_eleitoral = 1
+            if ano % 4 == 0:
+                tipo_eleicao = 1  # eleições gerais
+            else:
+                tipo_eleicao = 2  # eleições municipais
+        else:
+            eh_ano_eleitoral = 0
+            tipo_eleicao = 0
+        
         eh_periodo_pandemico = 1 if (pd.Timestamp('2020-03-11').date() <= d <= pd.Timestamp('2023-05-05').date()) else 0
 
         date_from = datetime.now()
