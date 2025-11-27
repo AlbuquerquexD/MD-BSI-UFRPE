@@ -58,7 +58,7 @@ def extract_dates_from_files():
             pmfs["__tramite_dt"] = pd.to_datetime(
                 pmfs["DATA_DO_TRAMITE"], errors="coerce"
             )
-            pmfs["__tramite_date"] = pmfs["__tramite_dt"].dt.date  # type: ignore
+            pmfs["__tramite_date"] = pmfs["__tramite_dt"].dt.date # type: ignore
         else:
             pmfs["__tramite_dt"] = pd.NaT
             pmfs["__tramite_date"] = None
@@ -67,7 +67,7 @@ def extract_dates_from_files():
             pmfs["__ultima_dt"] = pd.to_datetime(
                 pmfs["ULTIMA_ATUALIZACAO_RELATORIO"], errors="coerce"
             )
-            pmfs["__ultima_date"] = pmfs["__ultima_dt"].dt.date  # type: ignore
+            pmfs["__ultima_date"] = pmfs["__ultima_dt"].dt.date # type: ignore
         else:
             pmfs["__ultima_dt"] = pd.NaT
             pmfs["__ultima_date"] = None
@@ -76,7 +76,7 @@ def extract_dates_from_files():
             pmfs["__emissao_dt"] = pd.to_datetime(
                 pmfs["DATA_DE_EMISSAO"], errors="coerce"
             )
-            pmfs["__emissao_date"] = pmfs["__emissao_dt"].dt.date  # type: ignore
+            pmfs["__emissao_date"] = pmfs["__emissao_dt"].dt.date # type: ignore
         else:
             pmfs["__emissao_dt"] = pd.NaT
             pmfs["__emissao_date"] = None
@@ -199,10 +199,9 @@ def extract_dates_from_files():
     return dates, date_map
 
 
-def build_rows_from_dates(dates, starting_sk, date_map=None):
+def build_rows_from_dates(dates, date_map=None):
     rows = []
-    sk = starting_sk
-    br_holidays = holidays.Brazil(years=range(1900, datetime.now().year + 2))  # type: ignore
+    br_holidays = holidays.Brazil(years=range(1900, datetime.now().year + 2)) # type: ignore
 
     for d in dates:
         dia = d.day
@@ -253,7 +252,6 @@ def build_rows_from_dates(dates, starting_sk, date_map=None):
                 ciclo_val = None
 
         row = (
-            int(sk),
             d,
             int(dia),
             int(mes),
@@ -278,7 +276,6 @@ def build_rows_from_dates(dates, starting_sk, date_map=None):
         )
 
         rows.append(row)
-        sk += 1
 
     return rows
 
@@ -300,35 +297,36 @@ def main():
 
         create_table_sql = """
             CREATE TABLE IF NOT EXISTS dim_data (
-                data_sk INT PRIMARY KEY,
-                data DATE NOT NULL,
-                dia INT NOT NULL,
-                mes INT NOT NULL,
-                quartil INT NOT NULL,
-                semestre INT NOT NULL,
-                ano INT NOT NULL,
-                semana_do_ano INT NOT NULL,
-                dia_da_semana INT NOT NULL,
-                eh_final_de_semana TINYINT NOT NULL,
-                eh_dia_util TINYINT NOT NULL,
-                eh_ano_eleitoral TINYINT NOT NULL,
-                tipo_eleicao TINYINT NOT NULL,
-                estacao_ano VARCHAR(45) NOT NULL,
-                eh_periodo_pandemico TINYINT NOT NULL,
-                data_inicio_atividade_empresa DATE,
-                data_tramite_status DATE,
-                ultima_atualizacao_relatorio_status DATE,
-                date_from DATETIME NOT NULL,
-                date_to DATETIME NOT NULL,
-                version INT NOT NULL,
-                ciclo_corte DECIMAL(18,4)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+                data_sk INT NOT NULL AUTO_INCREMENT,
+                data DATETIME NULL,
+                dia INT NULL,
+                mes INT NULL,
+                quartil INT NULL,
+                semestre INT NULL,
+                ano INT NULL,
+                semana_do_ano INT NULL,
+                dia_da_semana INT NULL,
+                eh_final_de_semana TINYINT NULL,
+                eh_dia_util TINYINT NULL,
+                eh_ano_eleitoral TINYINT NULL,
+                tipo_eleicao TINYINT NULL,
+                estacao_ano VARCHAR(45) NULL,
+                eh_periodo_pandemico TINYINT NULL,
+                data_inicio_atividade_empresa DATE NULL,
+                data_tramite_status DATE NULL,
+                ultima_atualizacao_relatorio_status DATE NULL,
+                date_from TIMESTAMP NULL,
+                date_to TIMESTAMP NULL,
+                version INT NULL,
+                ciclo_corte DECIMAL(18,4) NULL,
+                PRIMARY KEY (data_sk)
+            ) ENGINE=InnoDB;
         """
         cursor.execute(create_table_sql)
         conn.commit()
 
-        cursor.execute("SELECT data FROM dim_data")
-        existing = {r[0] for r in cursor.fetchall()}  # type: ignore
+        cursor.execute("SELECT CAST(data AS DATE) FROM dim_data")
+        existing = {r[0] for r in cursor.fetchall()} # type: ignore
 
         new_dates = [d for d in dates if d not in existing]
 
@@ -374,7 +372,7 @@ def main():
 
             update_join_sql = """
                 UPDATE dim_data d
-                JOIN temp_dim_map t ON d.data = t.data
+                JOIN temp_dim_map t ON CAST(d.data AS DATE) = t.data
                 SET
                     d.data_inicio_atividade_empresa = COALESCE(d.data_inicio_atividade_empresa, t.data_inicio_atividade_empresa),
                     d.data_tramite_status = COALESCE(d.data_tramite_status, t.data_tramite_status),
@@ -395,17 +393,12 @@ def main():
             print("Nenhuma data nova para inserir. Nada a fazer.")
             return
 
-        cursor.execute("SELECT MAX(data_sk) FROM dim_data")
-        res = cursor.fetchone()
-        max_sk = res[0] if res and res[0] is not None else 0  # type: ignore
-        starting_sk = max_sk + 1  # type: ignore
+        rows = build_rows_from_dates(new_dates, date_map=date_map)
 
-        rows = build_rows_from_dates(new_dates, starting_sk, date_map=date_map)
-
-        n_with_inicio = sum(1 for r in rows if r[15] is not None)
-        n_with_tramite = sum(1 for r in rows if r[16] is not None)
-        n_with_ultima = sum(1 for r in rows if r[17] is not None)
-        n_with_ciclo = sum(1 for r in rows if r[21] is not None)
+        n_with_inicio = sum(1 for r in rows if r[14] is not None)
+        n_with_tramite = sum(1 for r in rows if r[15] is not None)
+        n_with_ultima = sum(1 for r in rows if r[16] is not None)
+        n_with_ciclo = sum(1 for r in rows if r[20] is not None)
 
         print(f"Mapeamento: {len(rows)} linhas preparadas")
         print(f"  data_inicio_atividade_empresa preenchido em: {n_with_inicio} linhas")
@@ -419,16 +412,16 @@ def main():
             "\nAmostra das primeiras 10 linhas preparadas (data, inicio, tramite, ultima, ciclo):"
         )
         for sample in rows[:10]:
-            print(sample[1], sample[15], sample[16], sample[17], sample[21])
+            print(sample[0], sample[14], sample[15], sample[16], sample[20])
 
         insert_sql = """
             INSERT INTO dim_data (
-                data_sk, data, dia, mes, quartil, semestre, ano, semana_do_ano,
+                data, dia, mes, quartil, semestre, ano, semana_do_ano,
                 dia_da_semana, eh_final_de_semana, eh_dia_util, eh_ano_eleitoral,
                 tipo_eleicao, estacao_ano, eh_periodo_pandemico,
                 data_inicio_atividade_empresa, data_tramite_status,
                 ultima_atualizacao_relatorio_status, date_from, date_to, version, ciclo_corte
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
 
         for i in range(0, len(rows), BATCH_SIZE):
